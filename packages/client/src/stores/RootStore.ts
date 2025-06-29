@@ -15,9 +15,12 @@ class RootStore {
     const storeContext = require.context('.', true, /\.store\.(ts|js)$/) as __WebpackModuleApi.RequireContext;
     storeContext.keys().forEach((key: string) => {
       const storeModule = storeContext(key);
-      const storeName = Object.keys(storeModule)[0];
-      const StoreClass = storeModule[storeName];
-      this[storeName] = new StoreClass();
+    // 从文件名中提取 store 名称
+      const storeName = key.match(/\.\/(\w+)\.store\.(ts|js)$/)?.[1];
+      if (storeName && storeModule.default) {
+        const StoreClass = storeModule.default;
+        this[`${storeName}Store`] = new StoreClass();
+      }
     });
   }
 }

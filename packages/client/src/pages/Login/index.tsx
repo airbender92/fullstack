@@ -2,14 +2,23 @@
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useStore } from '@/stores/useStore';
 
 const Login: React.FC = () => {
-  const onFinish = (values: { username: string; password: string }) => {
+
+  const store = useStore();
+  const {isLoggedIn, login, error } = store.LoginStore;
+
+  const onFinish = async (values: { username: string; password: string }) => {
     // 这里可以添加实际的登录逻辑，例如发送请求到后端验证用户名和密码
     console.log('Received values of form: ', values);
-    message.success('登录成功');
-    // 登录成功后可以重定向到首页
-    window.location.href = '/';
+    await login(values.username, values.password);
+    if (isLoggedIn) {
+      message.success('登录成功');
+      window.location.href = '/';
+    } else {
+      message.error(error || '登录失败，请检查用户名和密码');
+    }
   };
   return (
     <Form

@@ -2,7 +2,10 @@ const {merge} = require('webpack-merge');
 const path = require('path');
 const baseConfig = require('./webpack.base.js'); // Adjust the path as necessary
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const {API_BASE_URL} = require('./config.js');
+const loadEnv = require('./loadEnv');
+
+const envConfig = loadEnv();
+const { API_BASE_URL } = envConfig;
 
 
 

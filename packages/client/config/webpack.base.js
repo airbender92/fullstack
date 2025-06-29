@@ -4,7 +4,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const { PUBLIC_PATH, APP_TITLE, IS_DEV } = require('./config.js');
+const loadEnv = require('./loadEnv');
+
+const envConfig = loadEnv();
+
+const { PORT, API_BASE_URL, PUBLIC_PATH, APP_TITLE, IS_DEV } = envConfig;
 
 const baseConfig = {
     entry: path.resolve(__dirname, "../src/index.tsx"), // 入口文件
@@ -94,10 +98,13 @@ const baseConfig = {
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
             'process.env.PUBLIC_PATH': JSON.stringify(PUBLIC_PATH),
+            'process.env.PORT': JSON.stringify(PORT),
+            'process.env.API_BASE_URL': JSON.stringify(API_BASE_URL),
+            'process.env.IS_DEV': JSON.stringify(IS_DEV),
         }),
     ],
     optimization: {
-        splitChunks: {  
+        splitChunks: {
             chunks: 'all',
             cacheGroups: {
                 vendor: {

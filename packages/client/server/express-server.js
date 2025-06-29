@@ -6,7 +6,10 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const devConfig = require('../config/webpack.dev.js'); // Adjust the path as necessary
-const { PORT, API_BASE_URL } = require('../config/config.js'); // Adjust the path as necessary
+const loadEnv = require('../config/loadEnv');
+
+const envConfig = loadEnv();
+const {PORT, API_BASE_URL } = envConfig;
 
 const app = express();
 const compiler = webpack(devConfig);
