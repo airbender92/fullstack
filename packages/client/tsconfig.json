@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "esnext", // Compile to a modern ECMAScript version that supports ES modules
+    "module": "esnext", // Use ES module syntax for module code generation
+    "moduleResolution": "node", // Use Node.js style module resolution
+    "lib": ["DOM", "ESNext"],
+    "jsx": "react-jsx",
+    "types": ["node", "react", "react-dom"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noEmit": false, // 必须设置为 false 以生成输出
+    "outDir": "./dist", // 输出目录需与 Webpack 一致
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

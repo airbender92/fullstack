@@ -1,0 +1,13 @@
+# 编译输出
+dist/
+lib/
+
+# 数据库文件
+*.db
+*.sqlite
+
+# PM2 配置
+.pm2/
+
+# 临时上传目录
+uploads/

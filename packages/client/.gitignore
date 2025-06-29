@@ -1,0 +1,12 @@
+# 构建产物
+dist/
+public/build/
+
+# 开发服务器缓存
+.cache/
+.hot-loader/
+
+# 本地环境配置
+.env.development.local
+.env.test.local
+.env.production.local

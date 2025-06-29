@@ -1,0 +1,6 @@
+# 依赖
+node_modules/
+
+# 编译输出
+dist/
+lib/
