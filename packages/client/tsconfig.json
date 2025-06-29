@@ -11,6 +11,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    // 开启装饰器配置
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "noEmit": false, // 必须设置为 false 以生成输出
     "outDir": "./dist", // 输出目录需与 Webpack 一致
     "baseUrl": ".",
