@@ -1,0 +1,43 @@
+name: GitHub Actions Build and Deploy with pnpm
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        registry-url: https://registry.npmmirror.com  # 可选：配置镜像加速
+        
+    - name: Install pnpm
+      run: npm install -g pnpm@latest
+      
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Cache pnpm dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.pnpm-store
+        key: ${{ runner.os }}-pnpm-${{ hashFiles('packages/client/package.json', 'packages/client/pnpm-lock.yaml') }}
+        
+    - name: Install dependencies (monorepo)
+      run: |
+        pnpm install --filter=client  # 仅安装 client 包依赖
+        # 或 pnpm install  # 安装所有工作区依赖
+
+    - name: Build frontend (monorepo)
+      run: pnpm run build --filter=client
+        
+        
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@releases/v4
+      with:
+        ACCESS_TOKEN: ${{ secrets.FULLSTACK }}
+        BRANCH: gh-pages
+        FOLDER: packages/client/dist  # 假设构建输出在 dist 目录，根据实际调整
+        CLEAN: true
