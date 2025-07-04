@@ -39,7 +39,7 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@releases/v4
       with:
-        ACCESS_TOKEN: ${{ secrets.FULLSTACK }}
+        token: ${{ secrets.FULLSTACK }}
         BRANCH: gh-pages
         FOLDER: packages/client/dist  # 假设构建输出在 dist 目录，根据实际调整
         CLEAN: true
