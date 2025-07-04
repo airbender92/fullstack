@@ -31,7 +31,9 @@ jobs:
         # 或 pnpm install  # 安装所有工作区依赖
 
     - name: Build frontend (monorepo)
-      run: pnpm run build --filter client
+      run: |
+       cd packages/client
+       pnpm run build
         
         
     - name: Deploy to GitHub Pages
