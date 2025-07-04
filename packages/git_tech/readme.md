@@ -10,3 +10,12 @@
   ```bash
     git revert HEAD  # 撤销上一次的 revert 操作
   ```
+
+# git reset [last good SHA]
+
+默认情况下，git reset不改变工作区的文件（但会改变暂存区），--hard参数可以让工作区里面的文件也回到以前的状态。
+
+
+# git commit --amend -m "Fixes bug #42"
+
+提交以后，发现提交信息写错了，这时可以使用git commit命令的--amend参数，可以修改上一次的提交信息
