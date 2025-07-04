@@ -27,11 +27,11 @@ jobs:
         
     - name: Install dependencies (monorepo)
       run: |
-        pnpm install --filter=client  # 仅安装 client 包依赖
+        pnpm install --filter client  # 仅安装 client 包依赖
         # 或 pnpm install  # 安装所有工作区依赖
 
     - name: Build frontend (monorepo)
-      run: pnpm run build --filter=client
+      run: pnpm run build --filter client
         
         
     - name: Deploy to GitHub Pages
