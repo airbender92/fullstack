@@ -23,10 +23,13 @@ app.use(
 );
 
 // 热更新中间件
-app.use(webpackHotMiddleware(compiler));
+app.use(webpackHotMiddleware(compiler, {
+    publicPath: '/fullstack', // 直接指定与 publicPath 一致的值
+    stats: 'minimal'
+  }));
 
-// 静态文件服务
-app.use(express.static(path.join(__dirname, '../public')));
+// 静态文件服务（添加路径前缀）
+app.use('/fullstack', express.static(path.join(__dirname, '../public')));
 
 // 代理 API 请求
 
