@@ -23,7 +23,7 @@ export const login = async(req: Request, res: Response) => {
         res.status(200).json({token, refreshToken, userId: user._id});
 
     }catch(error) {
-        res.status(500).json({ error: 'Internal server error'})
+        res.status(500).json({ error: 'Internal server error', errorInfo: error})
     }
 }
 
