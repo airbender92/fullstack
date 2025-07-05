@@ -20,7 +20,7 @@ interface UserInfo {
 
 // 登录请求
 export const login = (data: LoginRequest) =>
-    request.post<LoginResponse>('/api/login', data);
+    request.post<LoginResponse>('/api/users', data);
 
 export const getUserInfo = () =>
     request.get<UserInfo>('/api/data');

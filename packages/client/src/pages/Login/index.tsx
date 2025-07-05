@@ -12,7 +12,8 @@ const Login: React.FC = () => {
   const onFinish = async (values: { username: string; password: string }) => {
     // 这里可以添加实际的登录逻辑，例如发送请求到后端验证用户名和密码
     console.log('Received values of form: ', values);
-    await login(values.username, values.password);
+    const response = await login({username: values.username, password: values.password});
+    console.log('response', response);
     if (isLoggedIn) {
       message.success('登录成功');
       window.location.href = '/';
