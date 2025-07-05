@@ -8,6 +8,7 @@ export const createUser = async (req: Request, res: Response) => {
         const savedUser = await newUser.save();
         res.status(201).json(savedUser);
     } catch (err) {
+        console.log('err', err);
         res.status(500).json({ error: 'Failed to create user' });
     }
 }

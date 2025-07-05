@@ -14,7 +14,6 @@ out/
 
 # IDE 与编辑器缓存
 .idea/
-.vscode/
 *.suo
 *.ntvs*
 *.njsproj
