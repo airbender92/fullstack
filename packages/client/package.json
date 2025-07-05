@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "homepage": "https://airbender92.github.io/fullstack/",
   "scripts": {
     "dev": "webpack-dev-server --config config/webpack.dev.js",
     "start": "node server/express-server.js",
