@@ -7,7 +7,7 @@ const loadEnv = () => {
     const envConfig = dotenv.config({ path: path.resolve(__dirname, `../${envPath}`) }).parsed;
       // 定义共有环境变量的默认值
     const defaultEnv = {
-        PUBLIC_PATH: '/',
+        PUBLIC_PATH: '/fullstack',
         APP_TITLE: 'My Fullstack App',
         IS_DEV: process.env.NODE_ENV === 'development'
     };
