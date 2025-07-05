@@ -3,6 +3,10 @@ import cors from 'cors'
 import {config} from 'dotenv'
 import connectDB from "./config/db";
 import userRoutes from './routes/user.routes'
+import lotteryRoutes from './routes/lottery.routes';
+import authRoutes from './routes/auth.routes'
+import syncData from "./config/syncData";
+import cron from 'node-cron'
 
 config();
 
@@ -18,6 +22,13 @@ connectDB();
 
 // 路由
 app.use('/api/users', userRoutes);
+app.use('/api/lottery', lotteryRoutes);
+app.use('/api/auth', authRoutes);
+
+// 每周同步一次数据
+cron.schedule('0 0 * * 0', () => {
+    syncData();
+});
 
 // 启动服务器
 app.listen(PORT, () => {

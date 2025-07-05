@@ -49,7 +49,7 @@ instance.interceptors.response.use(
           }
 
           // 发送刷新 token 请求
-          const { data } = await instance.post('/api/refresh-token', { refreshToken });
+          const { data } = await instance.post('/api/auth/refresh-token', { refreshToken });
           const newToken = data.token;
           const newRefreshToken = data.refreshToken;
 

@@ -8,6 +8,7 @@ import MobxLayout from '@/layout/MobxLayout';
 import BasicLayout from '@/layout/BasicLayout';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from '@/pages/Login';
+import LotteryChart from '@/pages/Lottery';
 
 const App: React.FC = () => {
   const [count, setCount] = React.useState(0);
@@ -21,7 +22,7 @@ const App: React.FC = () => {
       <Routes>
         {/* 登录路由放在权限验证外面 */}
         <Route path="/login" element={<Login />} />
-        
+
         {/* 需要权限的路由放在 SecurityLayout 内 */}
         <Route element={<SecurityLayout />}>
           <Route element={<MobxLayout />}>
@@ -41,7 +42,10 @@ const App: React.FC = () => {
                   </div>
                 }
               />
-              {/* 其他需要权限的路由 */}
+              <Route
+                path="/lottery-chart"
+                element={<LotteryChart />}
+              />
             </Route>
           </Route>
         </Route>
