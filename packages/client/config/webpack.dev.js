@@ -17,6 +17,7 @@ const devConfig = merge(baseConfig, {
                 static: {
                     // 修改为 client/public 目录
                     directory: path.resolve(__dirname, '../public'), 
+                    publicPath: '/fullstack'
                 },
                 compress: true,
                 port: 3000,
