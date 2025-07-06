@@ -10,6 +10,8 @@ export interface IUser extends Document {
 const userSchema: Schema = new Schema({
     username: { type: String, required: true, unique: true},
     password: { type: String, required: true},
+     email: { type: String, required: true, unique: true }, // 添加 email 字段
+    role: { type: String, enum: ['user', 'admin'], default: 'user' } // 添加 role 字段
 });
 
 // 密码加密
@@ -27,6 +29,6 @@ userSchema.methods.comparePassword = async function(candidatePassword: string): 
     return bcrypt.compare(candidatePassword, this.password);
 }
 
-const User = mongoose.model<IUser>('User', userSchema);
+const User = mongoose.model<IUser>('User', userSchema, 'users');
 
 export default User;

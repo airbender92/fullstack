@@ -12,6 +12,6 @@ const lotterySchema: Schema = new Schema({
     blueBall: { type: Number, required: true},
 })
 
-const Lottery = mongoose.model<ILottery>('Lottery', lotterySchema);
+const Lottery = mongoose.model<ILottery>('Lottery', lotterySchema, 'looteries');
 
 export default Lottery;

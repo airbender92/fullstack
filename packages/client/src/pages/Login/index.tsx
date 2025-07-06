@@ -7,18 +7,18 @@ import { useStore } from '@/stores/useStore';
 const Login: React.FC = () => {
 
   const store = useStore();
-  const {isLoggedIn, login, error } = store.LoginStore;
+  const { login, error } = store.LoginStore;
 
   const onFinish = async (values: { username: string; password: string }) => {
     // 这里可以添加实际的登录逻辑，例如发送请求到后端验证用户名和密码
     console.log('Received values of form: ', values);
     const response = await login({username: values.username, password: values.password});
-    console.log('response', response);
-    if (isLoggedIn) {
+  
+    if (response.isLoggedIn) {
       message.success('登录成功');
-      window.location.href = '/';
+      window.location.href = '#/';
     } else {
-      message.error(error || '登录失败，请检查用户名和密码');
+      message.error(response.error || '登录失败，请检查用户名和密码');
     }
   };
   return (

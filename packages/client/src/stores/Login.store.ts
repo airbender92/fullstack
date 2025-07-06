@@ -16,9 +16,9 @@ class LoginStore {
   }
 
   @action
-  login = async (username: string, password: string) => {
+  login = async (params: {username: string, password: string}) => {
     try {
-      const response = await login({ username, password });
+      const response = await login(params);
       this.isLoggedIn = true;
       this.token = response.token;
       this.refreshToken = response.refreshToken;
@@ -27,11 +27,13 @@ class LoginStore {
       // 将 token 和 refreshToken 存储到 localStorage
       localStorage.setItem('token', this.token);
       localStorage.setItem('refreshToken', this.refreshToken);
+      return this;
     } catch (error) {
       this.isLoggedIn = false;
       this.token = null;
       this.refreshToken = null;
       this.error = '登录失败，请检查用户名和密码';
+      return this;
     }
   };
 
