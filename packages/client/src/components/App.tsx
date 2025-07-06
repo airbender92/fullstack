@@ -10,13 +10,11 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from '@/pages/Login';
 import LotteryChart from '@/pages/Lottery';
 import LoginGuard from './LoginGuard';
+import routes from '@/routes';
+import PermissionGuard from './PermissionGuard';
 
 const App: React.FC = () => {
-  const [count, setCount] = React.useState(0);
-
-  const increment = () => {
-    setCount((prev) => prev + 1);
-  };
+  
 
   return (
     <Router>
@@ -29,24 +27,28 @@ const App: React.FC = () => {
           <Route element={<SecurityLayout />}>
             <Route element={<MobxLayout />}>
               <Route element={<BasicLayout />}>
-                <Route
-                  path="/"
-                  element={
-                    <div className="app-container">
-                      <h1 className="app-title">
-                        React + TypeScript + Ant Design
-                      </h1>
-                      <div className="card">
-                        <UserOutlined className="icon" />
-                        <p>点击按钮计数：{count}</p>
-                        <Button type="primary" onClick={increment}>
-                          增加
-                        </Button>
-                      </div>
-                    </div>
+                {routes.map((route: any, index: number) => {
+                  if(route.permission) {
+                    return (
+                      <Route 
+                        key={index}
+                        path={route.path}
+                        element={
+                          <PermissionGuard permission={route.permission}>
+                            {route.element}
+                          </PermissionGuard>
+                        }
+                      />
+                    )
+                  } else {
+                      return (
+                      <Route 
+                        key={index}
+                       {...route}
+                      />
+                    )
                   }
-                />
-                <Route path="/lottery-chart" element={<LotteryChart />} />
+                })}
               </Route>
             </Route>
           </Route>

@@ -42,5 +42,22 @@ export const refreshToken = async(req: Request, res: Response) => {
     }catch(error) {
         res.status(401).json({error: 'Invalid refresh token'})
     }
+}
 
+export const getPermissions = async(req: Request, res: Response) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+        const userId = (decoded as { userId: string }).userId;
+        const user = await User.findById(userId).select('permissions');
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json(user.permissions || []);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error', errorInfo: error });
+    }
 }

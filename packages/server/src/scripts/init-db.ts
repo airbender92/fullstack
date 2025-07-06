@@ -1,6 +1,6 @@
 /**
  * 初始化账户
- * 执行命令：node-ts init-db.ts
+ * 执行命令：ts-node init-db.ts
  */
 
 import mongoose from 'mongoose'
@@ -28,19 +28,26 @@ async function seedUsers(){
             console.log('Database already seeded with users');
             return;
         };
+          // 定义权限映射
+        const rolePermissions = {
+            admin: ['home', 'profile', 'lottery', 'admin-dashboard'],
+            user: ['home', 'profile', 'lottery']
+        };
         // 初始账号
         const initialUsers = [
             {
                 username: 'admin',
                 password: 'admin123',
                 email: 'admin@example.com',
-                role: 'admin'
+                role: 'admin',
+                 permissions: rolePermissions.admin // 管理员权限
             },
              {
                 username: 'user',
                 password: 'user123',
                 email: 'user@example.com',
-                role: 'user'
+                role: 'user',
+                 permissions: rolePermissions.user // 普通用户权限
             }
         ];
         // 这里使用save()逐个保存，触发pre-save钩子

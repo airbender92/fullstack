@@ -129,7 +129,7 @@ const LotteryChart: React.FC = () => {
 
   // 初始化加载
   useEffect(() => {
-    loadData();
+    // loadData();
   }, [timeRange]);
 
   return (

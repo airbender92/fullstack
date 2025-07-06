@@ -26,3 +26,8 @@ export const getUserInfo = () => request.get<UserInfo>('/api/data');
 
 export const uploadFile = (formData: FormData) =>
   request.upload<{ url: string }>('/api/upload', formData);
+
+// 新增获取权限的方法
+export const getPermissions = () => {
+  return request.get('/api/auth/permissions');
+};

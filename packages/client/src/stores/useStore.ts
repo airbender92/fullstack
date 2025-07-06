@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 import RootStore from './RootStore';
 
-const StoreContext = createContext<RootStore | null>(null);
+export const StoreContext = createContext<RootStore | null>(null);
 
 export const StoreProvider = StoreContext.Provider;
 
