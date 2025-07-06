@@ -15,7 +15,9 @@ interface TimeRangeOption {
 
 const LotteryChart: React.FC = () => {
   const [timeRange, setTimeRange] = useState<string>('oneYear');
-  const [frequencyData, setFrequencyData] = useState<FrequencyData | null>(null);
+  const [frequencyData, setFrequencyData] = useState<FrequencyData | null>(
+    null,
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,16 +35,24 @@ const LotteryChart: React.FC = () => {
     if (!frequencyData) return {};
 
     // 处理红球数据
-    const redBalls = Object.keys(frequencyData.redBallFrequency).map(Number).sort((a, b) => a - b);
-    const redBallCounts = redBalls.map(ball => frequencyData?.redBallFrequency[ball] || 0);
+    const redBalls = Object.keys(frequencyData.redBallFrequency)
+      .map(Number)
+      .sort((a, b) => a - b);
+    const redBallCounts = redBalls.map(
+      (ball) => frequencyData?.redBallFrequency[ball] || 0,
+    );
 
     // 处理蓝球数据
-    const blueBalls = Object.keys(frequencyData.blueBallFrequency).map(Number).sort((a, b) => a - b);
-    const blueBallCounts = blueBalls.map(ball => frequencyData?.blueBallFrequency[ball] || 0);
+    const blueBalls = Object.keys(frequencyData.blueBallFrequency)
+      .map(Number)
+      .sort((a, b) => a - b);
+    const blueBallCounts = blueBalls.map(
+      (ball) => frequencyData?.blueBallFrequency[ball] || 0,
+    );
 
     return {
       title: {
-        text: `双色球号码频率统计 (${timeRangeOptions.find(option => option.value === timeRange)?.label || timeRange})`,
+        text: `双色球号码频率统计 (${timeRangeOptions.find((option) => option.value === timeRange)?.label || timeRange})`,
         left: 'center',
         textStyle: {
           fontSize: 18,
@@ -170,4 +180,4 @@ const LotteryChart: React.FC = () => {
   );
 };
 
-export default LotteryChart;    
+export default LotteryChart;

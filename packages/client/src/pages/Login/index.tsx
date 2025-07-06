@@ -5,15 +5,17 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useStore } from '@/stores/useStore';
 
 const Login: React.FC = () => {
-
   const store = useStore();
   const { login, error } = store.LoginStore;
 
   const onFinish = async (values: { username: string; password: string }) => {
     // 这里可以添加实际的登录逻辑，例如发送请求到后端验证用户名和密码
     console.log('Received values of form: ', values);
-    const response = await login({username: values.username, password: values.password});
-  
+    const response = await login({
+      username: values.username,
+      password: values.password,
+    });
+
     if (response.isLoggedIn) {
       message.success('登录成功');
       window.location.href = '#/';
@@ -32,7 +34,10 @@ const Login: React.FC = () => {
         name="username"
         rules={[{ required: true, message: '请输入用户名!' }]}
       >
-        <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="用户名" />
+        <Input
+          prefix={<UserOutlined className="site-form-item-icon" />}
+          placeholder="用户名"
+        />
       </Form.Item>
       <Form.Item
         name="password"

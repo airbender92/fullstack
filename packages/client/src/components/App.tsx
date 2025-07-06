@@ -15,12 +15,12 @@ const App: React.FC = () => {
   const [count, setCount] = React.useState(0);
 
   const increment = () => {
-    setCount(prev => prev + 1);
+    setCount((prev) => prev + 1);
   };
 
   return (
     <Router>
-        <LoginGuard>
+      <LoginGuard>
         <Routes>
           {/* 登录路由放在权限验证外面 */}
           <Route path="/login" element={<Login />} />
@@ -33,7 +33,9 @@ const App: React.FC = () => {
                   path="/"
                   element={
                     <div className="app-container">
-                      <h1 className="app-title">React + TypeScript + Ant Design</h1>
+                      <h1 className="app-title">
+                        React + TypeScript + Ant Design
+                      </h1>
                       <div className="card">
                         <UserOutlined className="icon" />
                         <p>点击按钮计数：{count}</p>
@@ -44,15 +46,12 @@ const App: React.FC = () => {
                     </div>
                   }
                 />
-                <Route
-                  path="/lottery-chart"
-                  element={<LotteryChart />}
-                />
+                <Route path="/lottery-chart" element={<LotteryChart />} />
               </Route>
             </Route>
           </Route>
         </Routes>
-        </LoginGuard>
+      </LoginGuard>
     </Router>
   );
 };

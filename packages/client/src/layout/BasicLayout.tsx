@@ -3,7 +3,6 @@ import { Layout, Menu } from 'antd';
 import { Link, Outlet } from 'react-router-dom';
 import { HomeOutlined, UserOutlined } from '@ant-design/icons';
 
-
 interface BasicLayoutProps {
   children?: React.ReactNode;
 }

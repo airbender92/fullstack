@@ -1,9 +1,6 @@
 // client/src/stores/Login.store.ts
 import { makeObservable, observable, action } from 'mobx';
-import {
-    login,
-    getUserInfo,
-} from "@/service/login"
+import { login, getUserInfo } from '@/service/login';
 
 class LoginStore {
   @observable isLoggedIn: boolean = false;
@@ -16,7 +13,7 @@ class LoginStore {
   }
 
   @action
-  login = async (params: {username: string, password: string}) => {
+  login = async (params: { username: string; password: string }) => {
     try {
       const response = await login(params);
       this.isLoggedIn = true;

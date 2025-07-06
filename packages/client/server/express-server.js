@@ -1,4 +1,3 @@
-
 const express = require('express');
 const path = require('path');
 const webpack = require('webpack');
@@ -9,7 +8,7 @@ const devConfig = require('../config/webpack.dev.js'); // Adjust the path as nec
 const loadEnv = require('../config/loadEnv');
 
 const envConfig = loadEnv();
-const {PORT, API_BASE_URL } = envConfig;
+const { PORT, API_BASE_URL } = envConfig;
 
 const app = express();
 const compiler = webpack(devConfig);
@@ -18,15 +17,17 @@ const compiler = webpack(devConfig);
 app.use(
   webpackDevMiddleware(compiler, {
     publicPath: devConfig.output?.publicPath || '/',
-    stats: 'minimal'
-  })
+    stats: 'minimal',
+  }),
 );
 
 // 热更新中间件
-app.use(webpackHotMiddleware(compiler, {
+app.use(
+  webpackHotMiddleware(compiler, {
     publicPath: '/fullstack', // 直接指定与 publicPath 一致的值
-    stats: 'minimal'
-  }));
+    stats: 'minimal',
+  }),
+);
 
 // 静态文件服务（添加路径前缀）
 app.use('/fullstack', express.static(path.join(__dirname, '../public')));
@@ -41,7 +42,7 @@ const proxyConfig = devConfig.devServer?.proxy || [
     changeOrigin: true,
     pathRewrite: { '^/api': '' },
     logLevel: 'debug',
-  }
+  },
 ];
 
 // 设置代理并添加错误处理
@@ -53,7 +54,9 @@ if (Array.isArray(proxyConfig)) {
       pathRewrite: config.pathRewrite,
       on: {
         proxyReq: (proxyReq, req, res) => {
-          console.debug(`Proxying ${req.method} ${req.url} to ${proxyReq.protocol}//${proxyReq.host}${proxyReq.path}`);
+          console.debug(
+            `Proxying ${req.method} ${req.url} to ${proxyReq.protocol}//${proxyReq.host}${proxyReq.path}`,
+          );
         },
         error: (err, req, res) => {
           console.error(`Proxy error: ${err.message}`);
@@ -68,10 +71,12 @@ if (Array.isArray(proxyConfig)) {
   const proxy = createProxyMiddleware({
     target: proxyConfig.target,
     changeOrigin: proxyConfig.changeOrigin,
-      pathRewrite: proxyConfig.pathRewrite,
+    pathRewrite: proxyConfig.pathRewrite,
     on: {
       proxyReq: (proxyReq, req, res) => {
-        console.debug(`Proxying ${req.method} ${req.url} to ${proxyReq.protocol}//${proxyReq.host}${proxyReq.path}`);
+        console.debug(
+          `Proxying ${req.method} ${req.url} to ${proxyReq.protocol}//${proxyReq.host}${proxyReq.path}`,
+        );
       },
       error: (err, req, res) => {
         console.error(`Proxy error: ${err.message}`);
@@ -81,10 +86,6 @@ if (Array.isArray(proxyConfig)) {
   });
   app.use(proxy);
 }
-
-
-
-
 
 // 处理所有其他请求，返回index.html
 app.get('*name', (req, res) => {

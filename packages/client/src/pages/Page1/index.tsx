@@ -1,6 +1,6 @@
 // client/src/components/Page1.tsx
 import React from 'react';
-import {Button} from 'antd'
+import { Button } from 'antd';
 import { observer } from 'mobx-react';
 import { useStore } from '../store/useStore';
 

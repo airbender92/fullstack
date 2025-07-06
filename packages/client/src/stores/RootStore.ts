@@ -2,8 +2,8 @@
 import { makeObservable } from 'mobx';
 
 class RootStore {
-   // 定义索引签名，允许通过字符串访问属性
-  [key: string]: any; 
+  // 定义索引签名，允许通过字符串访问属性
+  [key: string]: any;
 
   constructor() {
     makeObservable(this);
@@ -12,10 +12,14 @@ class RootStore {
 
   importStores() {
     // 这里需要一个类型断言来告诉 TypeScript require.context 的类型
-    const storeContext = require.context('.', true, /\.store\.(ts|js)$/) as __WebpackModuleApi.RequireContext;
+    const storeContext = require.context(
+      '.',
+      true,
+      /\.store\.(ts|js)$/,
+    ) as __WebpackModuleApi.RequireContext;
     storeContext.keys().forEach((key: string) => {
       const storeModule = storeContext(key);
-    // 从文件名中提取 store 名称
+      // 从文件名中提取 store 名称
       const storeName = key.match(/\.\/(\w+)\.store\.(ts|js)$/)?.[1];
       if (storeName && storeModule.default) {
         const StoreClass = storeModule.default;
@@ -26,7 +30,6 @@ class RootStore {
 }
 
 export default RootStore;
-
 
 /**
  * 

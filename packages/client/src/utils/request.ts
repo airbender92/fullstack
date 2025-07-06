@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 const getToken = () => localStorage.getItem('token');
 const setToken = (token: string) => localStorage.setItem('token', token);
 const getRefreshToken = () => localStorage.getItem('refreshToken');
-const setRefreshToken = (refreshToken: string) => localStorage.setItem('refreshToken', refreshToken);
+const setRefreshToken = (refreshToken: string) =>
+  localStorage.setItem('refreshToken', refreshToken);
 
 // 创建 axios 实例
 const instance: AxiosInstance = axios.create({
@@ -24,7 +25,7 @@ instance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // 响应拦截器
@@ -49,7 +50,9 @@ instance.interceptors.response.use(
           }
 
           // 发送刷新 token 请求
-          const { data } = await instance.post('/api/auth/refresh-token', { refreshToken });
+          const { data } = await instance.post('/api/auth/refresh-token', {
+            refreshToken,
+          });
           const newToken = data.token;
           const newRefreshToken = data.refreshToken;
 
@@ -74,7 +77,7 @@ instance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 // 封装请求方法
@@ -82,10 +85,18 @@ const request = {
   get: <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
     return instance.get(url, config).then((response) => response.data);
   },
-  post: <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+  post: <T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> => {
     return instance.post(url, data, config).then((response) => response.data);
   },
-  put: <T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
+  put: <T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> => {
     return instance.put(url, data, config).then((response) => response.data);
   },
   delete: <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
@@ -93,22 +104,30 @@ const request = {
   },
   // 文件下载
   download: (url: string, config?: AxiosRequestConfig) => {
-    return instance.get(url, { ...config, responseType: 'blob' }).then((response) => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'file'); // 根据实际情况修改文件名
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
+    return instance
+      .get(url, { ...config, responseType: 'blob' })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'file'); // 根据实际情况修改文件名
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
   },
   // 文件上传
-  upload: <T>(url: string, data: FormData, config?: AxiosRequestConfig): Promise<T> => {
-    return instance.post(url, data, {
-      ...config,
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }).then((response) => response.data);
+  upload: <T>(
+    url: string,
+    data: FormData,
+    config?: AxiosRequestConfig,
+  ): Promise<T> => {
+    return instance
+      .post(url, data, {
+        ...config,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then((response) => response.data);
   },
 };
 

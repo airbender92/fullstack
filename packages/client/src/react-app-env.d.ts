@@ -14,7 +14,7 @@ declare module 'webpack' {
   function requireContext(
     directory: string,
     includeSubdirs: boolean,
-    filter: RegExp
+    filter: RegExp,
   ): {
     keys(): string[];
     <T>(id: string): T;

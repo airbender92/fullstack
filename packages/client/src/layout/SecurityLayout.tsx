@@ -1,8 +1,8 @@
 // client/src/layout/SecurityLayout.tsx
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { Layout } from 'antd';
 import useAuth from '@/hooks/useAuth';
-import { useNavigate, useLocation, Outlet  } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 
 interface SecurityLayoutProps {
   children?: React.ReactNode;
@@ -31,12 +31,12 @@ const SecurityLayout: React.FC<SecurityLayoutProps> = ({ children }) => {
     return null;
   }
 
-  console.log('children', children)
+  console.log('children', children);
   return (
     <Layout>
       <Content>
-         {/* 使用 Outlet 渲染子路由 */}
-{isAuthenticated ? <Outlet /> : null}
+        {/* 使用 Outlet 渲染子路由 */}
+        {isAuthenticated ? <Outlet /> : null}
       </Content>
     </Layout>
   );
