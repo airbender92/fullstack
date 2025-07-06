@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
-import Lottery, { ILottery} from '../models/lottery.model';
+import Lottery, { ILottery } from '../models/lottery.model';
+import { errorResponse, successResponse } from '../utils/responseUtil'
+
 
 const getFrequency = async (startDate: Date, endDate: Date) => {
     const results: ILottery[] = await Lottery.find({
@@ -10,7 +12,7 @@ const getFrequency = async (startDate: Date, endDate: Date) => {
     const blueBallFrequency: { [key: number]: number } = {};
 
     for (const result of results) {
-        if(result.redBalls && result.blueBall) {
+        if (result.redBalls && result.blueBall) {
             for (const redBall of result.redBalls) {
                 redBallFrequency[redBall] = (redBallFrequency[redBall] || 0) + 1;
             }
@@ -42,23 +44,30 @@ export const getLotteryFrequency = async (req: Request, res: Response) => {
             startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 1, endDate.getDate());
             break;
         default:
-            return res.status(400).json({ error: 'Invalid time range' })
+            return errorResponse(res, 400, 'Invalid time range');
+
+
     }
 
     try {
         const { redBallFrequency, blueBallFrequency } = await getFrequency(startDate, endDate)
-        res.status(200).json({ redBallFrequency, blueBallFrequency})
+        res.status(200).json({ redBallFrequency, blueBallFrequency })
+        successResponse(res, 200, { redBallFrequency, blueBallFrequency });
+
     } catch (error) {
-        res.status(500).json({ error: 'Failed to get lottery frequency' })
+        errorResponse(res, 500, 'Failed to get lottery frequency');
+
     }
 }
 
 // 获取所有彩票数据
-export const getLotteries = async(req: Request, res: Response) => {
-    try{
+export const getLotteries = async (req: Request, res: Response) => {
+    try {
         const lotteries: ILottery[] = await Lottery.find();
-        res.status(200).json(lotteries)
-    } catch(error) {
-        res.status(500).json({error: 'Failed to fetch lotteries'})
+        successResponse(res, 200, lotteries);
+
+    } catch (error) {
+        errorResponse(res, 500, 'Failed to fetch lotteries');
+
     }
 }

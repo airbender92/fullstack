@@ -11,6 +11,8 @@ const LoginGuard: React.FC<LoginGuardProps> = ({ children }) => {
   const location = useLocation();
   if (isAuthenticated && location.pathname === '/login') {
     return <Navigate to="/" replace />;
+  } else if (!isAuthenticated && location.pathname !== '/login'){
+    return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
 };

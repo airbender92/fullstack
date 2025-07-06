@@ -11,7 +11,7 @@ const PermissionGuard: React.FC<PermissionGuardProps> = ({ children, permission 
     const {permissions} = usePermission();
     const location = useLocation();
     if (permission && !permissions.includes(permission) && location.pathname !== '/login') {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/401" replace />;
     }
 
     return <>{children}</>;

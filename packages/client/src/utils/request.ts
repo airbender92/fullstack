@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { emit } from './event-bus';
+import { notification } from 'antd';
 
 // 假设这里有获取和设置 token、refreshToken 的函数
 const getToken = () => localStorage.getItem('token');
@@ -31,13 +32,15 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response: AxiosResponse) => {
+    if (response.data && response.data.success) {
+      return response.data.data
+    }
     return response;
   },
   async (error) => {
     const originalConfig = error.config;
-    const navigate = useNavigate();
-
     if (error.response) {
+      const errorData = error.response.data?.error;
       // 401 状态码处理
       if (error.response.status === 401 && !originalConfig._retry) {
         originalConfig._retry = true;
@@ -45,16 +48,16 @@ instance.interceptors.response.use(
         try {
           const refreshToken = getRefreshToken();
           if (!refreshToken) {
-            navigate('/login');
+            // 发布导航事件
+            emit('navigate', '/login');
             return Promise.reject(error);
           }
 
           // 发送刷新 token 请求
-          const { data } = await instance.post('/api/auth/refresh-token', {
+          const response: {token: string, refreshToken: string} = await instance.post('/api/auth/refresh-token', {
             refreshToken,
           });
-          const newToken = data.token;
-          const newRefreshToken = data.refreshToken;
+          const { token: newToken, refreshToken: newRefreshToken } = response;
 
           // 更新 token 和 refreshToken
           setToken(newToken);
@@ -64,19 +67,39 @@ instance.interceptors.response.use(
           originalConfig.headers.Authorization = `Bearer ${newToken}`;
           return instance(originalConfig);
         } catch (refreshError) {
-          // 刷新 token 失败，重定向到登录页
-          navigate('/login');
+          // 刷新 token 失败，发布导航事件
+          emit('navigate', '/login');
           return Promise.reject(refreshError);
         }
       }
 
       // 403 状态码处理
       if (error.response.status === 403) {
-        navigate('/login');
+        emit('navigate', '/login');
       }
+      // 500 状态码处理（服务器内部错误）
+      if (error.response.status === 500) {
+        notification.error({
+          message: 'Server Error',
+          description: errorData.message || 'An internal server error occurred'
+        });
+      }
+      return Promise.reject(errorData);
+    } else if (error.request) {
+      // 请求已发送，但没有收到响应
+      console.error('No response received:', error.request);
+      return Promise.reject({
+        code: 0,
+        message: 'Network error: No response received'
+      });
+    } else {
+      // 发送请求时出错
+      console.error('Error setting up the request:', error.message);
+      return Promise.reject({
+        code: -1,
+        message: 'Request setup error: ' + error.message
+      });
     }
-
-    return Promise.reject(error);
   },
 );
 

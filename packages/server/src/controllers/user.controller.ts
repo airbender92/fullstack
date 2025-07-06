@@ -1,23 +1,27 @@
 import { Request, Response } from 'express'
 import User from '../models/user.model'
+import { errorResponse, successResponse } from '../utils/responseUtil'
+
 
 export const createUser = async (req: Request, res: Response) => {
     try {
         const { username, password } = req.body;
         const newUser = new User({ username, password });
         const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
+        successResponse(res, 201, savedUser);
+
     } catch (err) {
-        console.log('err', err);
-        res.status(500).json({ error: 'Failed to create user' });
+        errorResponse(res, 500, 'Failed to create user');
+
     }
 }
 
-export const getUsers = async(req: Request, res: Response) => {
-    try{
+export const getUsers = async (req: Request, res: Response) => {
+    try {
         const users = await User.find();
-        res.status(200).json(users);
-    } catch(error) {
-        res.status(500).json({error: 'Failed to fetch users'})
+        successResponse(res, 200, users);
+
+    } catch (error) {
+        errorResponse(res, 500, 'Failed to fetch users');
     }
 }

@@ -1,23 +1,31 @@
 // client/src/components/App.tsx
 import React from 'react';
-import { Button } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 import '@/styles/global.less';
 import SecurityLayout from '@/layout/SecurityLayout';
 import MobxLayout from '@/layout/MobxLayout';
 import BasicLayout from '@/layout/BasicLayout';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route  } from 'react-router-dom';
 import Login from '@/pages/Login';
 import LotteryChart from '@/pages/Lottery';
 import LoginGuard from './LoginGuard';
 import routes from '@/routes';
 import PermissionGuard from './PermissionGuard';
+import usePermission from '../hooks/usePermission'
+
+import { NavigationProvider } from '@/utils/navigation'
+import NavigationListener from '@/utils/NavigationListener';
 
 const App: React.FC = () => {
-  
+  const { isLoading: permissionsLoading} = usePermission();
 
+  if(permissionsLoading) {
+    return <Spin spinning={true} />
+  }
   return (
     <Router>
+      {/* <NavigationProvider> */}
+      <NavigationListener />
       <LoginGuard>
         <Routes>
           {/* 登录路由放在权限验证外面 */}
@@ -54,6 +62,7 @@ const App: React.FC = () => {
           </Route>
         </Routes>
       </LoginGuard>
+      {/* </NavigationProvider> */}
     </Router>
   );
 };

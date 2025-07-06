@@ -7,6 +7,10 @@ import lotteryRoutes from './routes/lottery.routes';
 import authRoutes from './routes/auth.routes'
 import syncData from "./config/syncData";
 import cron from 'node-cron'
+import { errorHandler } from './utils/errorHandler'
+import { checkEnvVariables } from './utils/config'
+
+checkEnvVariables();
 
 config();
 
@@ -24,6 +28,8 @@ connectDB();
 app.use('/api/users', userRoutes);
 app.use('/api/lottery', lotteryRoutes);
 app.use('/api/auth', authRoutes);
+
+app.use(errorHandler as any);
 
 // 每周同步一次数据
 cron.schedule('0 0 * * 0', () => {
