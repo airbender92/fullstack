@@ -1,6 +1,7 @@
 // client/src/hooks/usePermissions.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getPermissions } from '@/service/login';
+import useAuth from './useAuth';
 
 type PermissionsState = {
   permissions: string[];
@@ -12,42 +13,39 @@ type PermissionsState = {
 let cachedPermissions: string[] | null = null;
 
 const usePermission = () => {
-  const [state, setState] = useState<PermissionsState>({
-    permissions: [],
-    isLoading: true,
-    error: false,
-  });
+  const { isAuthenticated } = useAuth();
+  const [permissions, setPermissions] = useState<string[]>([])
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // 如果已有缓存权限，直接使用
-    if (cachedPermissions) {
-      setState({
-        permissions: cachedPermissions,
-        isLoading: false,
-        error: false,
-      });
+  const loadPermissions = useCallback(async () => {
+    if(!isAuthenticated) {
+      setLoading(false);
       return;
     }
-    // 获取权限列表
-    getPermissions()
-      .then((permissions) => {
-        cachedPermissions = Array.isArray(permissions) ? permissions : [];
-        setState({
-          permissions: cachedPermissions,
-          isLoading: false,
-          error: false,
-        });
-      })
-      .catch(() => {
-        setState({
-          permissions: [],
-          isLoading: false,
-          error: true,
-        });
-      });
-  }, []);
+    try{
+      const data: any = await getPermissions();
+      setPermissions(data || []);
+    }catch(error) {
 
-  return state;
+    } finally {
+setLoading(false)
+    }
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    loadPermissions();
+  }, [loadPermissions]);
+
+  const hasPermission = useCallback(
+    (permission: string) => {
+      return permissions.includes(permission);
+  }, [permissions]);
+
+  return {
+    permissions,
+    loading,
+    hasPermission
+  }
 };
 
 export default usePermission;

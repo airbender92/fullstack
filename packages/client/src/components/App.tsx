@@ -11,17 +11,11 @@ import LotteryChart from '@/pages/Lottery';
 import LoginGuard from './LoginGuard';
 import routes from '@/routes';
 import PermissionGuard from './PermissionGuard';
-import usePermission from '../hooks/usePermission'
 
 import { NavigationProvider } from '@/utils/navigation'
 import NavigationListener from '@/utils/NavigationListener';
 
 const App: React.FC = () => {
-  const { isLoading: permissionsLoading} = usePermission();
-
-  if(permissionsLoading) {
-    return <Spin spinning={true} />
-  }
   return (
     <Router>
       {/* <NavigationProvider> */}

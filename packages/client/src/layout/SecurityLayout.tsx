@@ -31,7 +31,6 @@ const SecurityLayout: React.FC<SecurityLayoutProps> = ({ children }) => {
     return null;
   }
 
-  console.log('children', children);
   return (
     <Layout>
       <Content>

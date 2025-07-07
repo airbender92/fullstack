@@ -1,28 +1,44 @@
 // client/src/hooks/useAuth.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate} from 'react-router-dom'
 
 type AuthState = {
   isAuthenticated: boolean;
   isLoading: boolean;
 };
 
-const useAuth = (): AuthState => {
-  const [authState, setAuthState] = useState<AuthState>({
-    isAuthenticated: false,
-    isLoading: true,
-  });
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const isValidToken = token !== null;
-
-    setAuthState({
-      isAuthenticated: isValidToken,
-      isLoading: false,
-    });
+const useAuth = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+ 
+  const checkAuth = useCallback(async()=>{
+    try{
+      await new Promise(resolve => setTimeout(resolve, 200));
+      const token = await localStorage.getItem('token');
+      setIsAuthenticated(!!token);
+    } catch(error) {
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  return authState;
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    navigate('/login');
+  }, [navigate]);
+
+  return {
+    isAuthenticated,
+    isLoading,
+    logout
+  }
 };
 
 export default useAuth;

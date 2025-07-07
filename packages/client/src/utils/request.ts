@@ -2,6 +2,9 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { emit } from './event-bus';
 import { notification } from 'antd';
 
+// 缓存请求
+const pendingRequests = new Map();
+
 // 假设这里有获取和设置 token、refreshToken 的函数
 const getToken = () => localStorage.getItem('token');
 const setToken = (token: string) => localStorage.setItem('token', token);
@@ -18,6 +21,19 @@ const instance: AxiosInstance = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
+    // 生成请求标识
+    const requestKey = `${config.method}:${config.url}`;
+    // 如果有相同请求正在进行，取消当前请求
+    if(pendingRequests.has(requestKey)) {
+      const source = pendingRequests.get(requestKey);
+      source.cancel('请求被取消，原因：重复请求');
+      pendingRequests.delete(requestKey);
+    }
+    // 创建新的取消令牌
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
+    config.cancelToken = source.token;
+    pendingRequests.set(requestKey, source);
     const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -32,12 +48,23 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response: AxiosResponse) => {
+    // 请求完成后，从缓存中移除
+    const requestKey = `${response.config.method}:${response.config.url}`;
+    pendingRequests.delete(requestKey);
     if (response.data && response.data.success) {
       return response.data.data
     }
     return response;
   },
   async (error) => {
+    // 请求失败，从缓存中移除
+    if(error.config) {
+      const requestKey = `${error.config.method}:${error.config.url}`;
+      pendingRequests.delete(requestKey);
+    }
+    if(axios.isCancel(error)) {
+      console.log('请求被取消：', error.message)
+    }
     const originalConfig = error.config;
     if (error.response) {
       const errorData = error.response.data?.error;
@@ -106,31 +133,31 @@ instance.interceptors.response.use(
 // 封装请求方法
 const request = {
   get: <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return instance.get(url, config).then((response) => response.data);
+    return instance.get(url, config).then((response) => response as T);
   },
   post: <T>(
     url: string,
     data?: any,
     config?: AxiosRequestConfig,
   ): Promise<T> => {
-    return instance.post(url, data, config).then((response) => response.data);
+    return instance.post(url, data, config).then((response) => response as T);
   },
   put: <T>(
     url: string,
     data?: any,
     config?: AxiosRequestConfig,
   ): Promise<T> => {
-    return instance.put(url, data, config).then((response) => response.data);
+    return instance.put(url, data, config).then((response) => response as T);
   },
   delete: <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    return instance.delete(url, config).then((response) => response.data);
+    return instance.delete(url, config).then((response) => response as T);
   },
   // 文件下载
   download: (url: string, config?: AxiosRequestConfig) => {
     return instance
       .get(url, { ...config, responseType: 'blob' })
       .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = window.URL.createObjectURL(response as any);
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', 'file'); // 根据实际情况修改文件名
@@ -150,7 +177,7 @@ const request = {
         ...config,
         headers: { 'Content-Type': 'multipart/form-data' },
       })
-      .then((response) => response.data);
+      .then((response) => response as T);
   },
 };
 

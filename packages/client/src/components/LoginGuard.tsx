@@ -7,12 +7,19 @@ interface LoginGuardProps {
 }
 
 const LoginGuard: React.FC<LoginGuardProps> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+
+  if(isLoading) {
+    return <div>加载中...</div>
+  }
+
   if (isAuthenticated && location.pathname === '/login') {
     return <Navigate to="/" replace />;
-  } else if (!isAuthenticated && location.pathname !== '/login'){
-    return <Navigate to="/login" replace />;
+  } 
+  
+  if (!isAuthenticated && location.pathname !== '/login'){
+        return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
 };

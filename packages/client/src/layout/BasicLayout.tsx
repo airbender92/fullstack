@@ -3,7 +3,7 @@ import { Layout, Menu } from 'antd';
 import { Link, Outlet } from 'react-router-dom';
 import SideMenu from '@/components/SideMenu';
 import BreadcrumbComponent from '@/components/Breadcrumb';
-import useAuth from '@/hooks/useAuth';
+import usePermission from '@/hooks/usePermission';
 
 interface BasicLayoutProps {
   children?: React.ReactNode;
@@ -12,10 +12,7 @@ interface BasicLayoutProps {
 const { Header, Sider, Content, Footer } = Layout;
 
 const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
-  const auth = useAuth();
-  // Replace 'roles' with the correct property from AuthState if needed
-  const permissions = (auth as any).permissions || [];
-  
+  const {permissions} = usePermission();
   return (
     <Layout className="layout">
       <Header>
