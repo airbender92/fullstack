@@ -1,13 +1,11 @@
 // client/src/components/App.tsx
 import React from 'react';
-import { Spin } from 'antd';
 import '@/styles/global.less';
 import SecurityLayout from '@/layout/SecurityLayout';
 import MobxLayout from '@/layout/MobxLayout';
 import BasicLayout from '@/layout/BasicLayout';
 import { HashRouter as Router, Routes, Route  } from 'react-router-dom';
 import Login from '@/pages/Login';
-import LotteryChart from '@/pages/Lottery';
 import LoginGuard from './LoginGuard';
 import routes from '@/routes';
 import PermissionGuard from './PermissionGuard';

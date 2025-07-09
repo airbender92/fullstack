@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { EChartsReact } from 'react-echarts-wrapper';
+import React, { useState, useEffect, useRef } from 'react';
+import ReactECharts from 'echarts-for-react';
 import 'echarts';
 import axios from 'axios';
 
@@ -15,11 +15,15 @@ interface TimeRangeOption {
 
 const LotteryChart: React.FC = () => {
   const [timeRange, setTimeRange] = useState<string>('oneYear');
-  const [frequencyData, setFrequencyData] = useState<FrequencyData | null>(
-    null,
-  );
+  const [frequencyData, setFrequencyData] = useState<FrequencyData | null>(() => {
+    return {
+      redBallFrequency: [],
+      blueBallFrequency: []
+    }
+  });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const chartRef = useRef<HTMLDivElement>(null);
 
   // 时间范围选项
   const timeRangeOptions: TimeRangeOption[] = [
@@ -32,27 +36,66 @@ const LotteryChart: React.FC = () => {
 
   // 获取图表配置
   const getChartOptions = () => {
-    if (!frequencyData) return {};
-
     // 处理红球数据
-    const redBalls = Object.keys(frequencyData.redBallFrequency)
-      .map(Number)
-      .sort((a, b) => a - b);
+    const redBalls = frequencyData 
+      ? Object.keys(frequencyData.redBallFrequency).map(Number).sort((a, b) => a - b)
+      : [];
     const redBallCounts = redBalls.map(
       (ball) => frequencyData?.redBallFrequency[ball] || 0,
     );
 
     // 处理蓝球数据
-    const blueBalls = Object.keys(frequencyData.blueBallFrequency)
-      .map(Number)
-      .sort((a, b) => a - b);
+    const blueBalls = frequencyData
+      ? Object.keys(frequencyData.blueBallFrequency).map(Number).sort((a, b) => a - b)
+      : [];
     const blueBallCounts = blueBalls.map(
       (ball) => frequencyData?.blueBallFrequency[ball] || 0,
     );
 
+    // 合并所有球号作为x轴
+    const allBalls = [...redBalls, ...blueBalls];
+    
+    // 检查是否有数据
+    const hasData = allBalls.length > 0;
+    
+    // 图表标题
+    const titleText = `双色球号码频率统计 (${timeRangeOptions.find((option) => option.value === timeRange)?.label || timeRange})`;
+
+    // 无数据时的配置
+    if (!hasData) {
+      return {
+        title: {
+          text: titleText,
+          left: 'center',
+          textStyle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+          },
+        },
+        textStyle: {
+          fontFamily: 'Arial, sans-serif'
+        },
+        graphic: {
+          type: 'text',
+          left: 'center',
+          top: 'center',
+          style: {
+            text: '暂无数据',
+            fontSize: 20,
+            fontWeight: 'bold',
+            fill: '#999'
+          }
+        },
+        xAxis: { silent: true },
+        yAxis: { silent: true },
+        series: []
+      };
+    }
+
+    // 有数据时的配置
     return {
       title: {
-        text: `双色球号码频率统计 (${timeRangeOptions.find((option) => option.value === timeRange)?.label || timeRange})`,
+        text: titleText,
         left: 'center',
         textStyle: {
           fontSize: 18,
@@ -79,7 +122,7 @@ const LotteryChart: React.FC = () => {
       xAxis: [
         {
           type: 'category',
-          data: [...redBalls, ...blueBalls],
+          data: allBalls,
           axisLabel: {
             interval: 0,
             rotate: 45,
@@ -118,8 +161,8 @@ const LotteryChart: React.FC = () => {
     setError(null);
 
     try {
-      const response = await axios.get(`/api/lottery?timeRange=${timeRange}`);
-      setFrequencyData(response.data);
+      // const response = await axios.get(`/api/lottery?timeRange=${timeRange}`);
+      // setFrequencyData(response.data);
     } catch (err: any) {
       setError(err.message || '获取数据失败');
     } finally {
@@ -129,8 +172,15 @@ const LotteryChart: React.FC = () => {
 
   // 初始化加载
   useEffect(() => {
-    // loadData();
+    loadData();
   }, [timeRange]);
+
+  // 监听错误状态，在错误发生时显示错误信息
+  useEffect(() => {
+    if (error) {
+      console.error('数据加载错误:', error);
+    }
+  }, [error]);
 
   return (
     <div className="container mx-auto p-4 bg-white rounded-lg shadow-lg">
@@ -149,13 +199,6 @@ const LotteryChart: React.FC = () => {
         </select>
       </div>
 
-      {/* 加载状态 */}
-      {loading && (
-        <div className="flex justify-center items-center py-16">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-      )}
-
       {/* 错误提示 */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
@@ -164,10 +207,17 @@ const LotteryChart: React.FC = () => {
         </div>
       )}
 
-      {/* 图表 */}
-      {frequencyData && (
-        <div className="h-[500px]">
-          <EChartsReact option={getChartOptions()} style={{ height: '100%' }} />
+      {/* 加载状态 */}
+      {loading && (
+        <div className="h-[500px] flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      )}
+
+      {/* 图表容器 */}
+      {!loading && (
+        <div className="h-[500px]" ref={chartRef}>
+          <ReactECharts option={getChartOptions()} style={{ height: '100%' }} />
         </div>
       )}
 
@@ -180,4 +230,4 @@ const LotteryChart: React.FC = () => {
   );
 };
 
-export default LotteryChart;
+export default LotteryChart;    
