@@ -1,27 +1,25 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import useAuth from '@/hooks/useAuth';
+import { observer } from 'mobx-react'
+import  { useStore} from '@/stores/useStore'
 
 interface LoginGuardProps {
   children: React.ReactNode;
 }
 
-const LoginGuard: React.FC<LoginGuardProps> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+const LoginGuard: React.FC<LoginGuardProps> = observer(({ children }) => {
+  const store = useStore();
+  const { isLoggedIn } = store.LoginStore;
   const location = useLocation();
 
-  if(isLoading) {
-    return <div>加载中...</div>
-  }
-
-  if (isAuthenticated && location.pathname === '/login') {
+  if (isLoggedIn && location.pathname === '/login') {
     return <Navigate to="/" replace />;
   } 
   
-  if (!isAuthenticated && location.pathname !== '/login'){
+  if (!isLoggedIn && location.pathname !== '/login'){
         return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
-};
+});
 
 export default LoginGuard;

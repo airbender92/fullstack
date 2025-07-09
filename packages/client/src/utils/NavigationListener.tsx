@@ -5,7 +5,7 @@ import { on, off } from './event-bus';
 
 const NavigationListener = () => {
   const navigate = useNavigate();
-   
+
   useEffect(() => {
     const handleNavigate = ({ path, replace = false }: { path: string; replace?: boolean }) => {
       if (replace) {
@@ -14,7 +14,7 @@ const NavigationListener = () => {
         navigate(path);
       }
     };
-    
+
     on('navigate', handleNavigate);
     
     return () => {

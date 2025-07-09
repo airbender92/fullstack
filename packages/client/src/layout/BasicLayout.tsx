@@ -1,9 +1,11 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Dropdown, Menu, message, Avatar } from 'antd';
+import {UserOutlined, LogoutOutlined} from '@ant-design/icons'
 import { Link, Outlet } from 'react-router-dom';
 import SideMenu from '@/components/SideMenu';
 import BreadcrumbComponent from '@/components/Breadcrumb';
-import usePermission from '@/hooks/usePermission';
+import { useStore } from '@/stores/useStore'
+import { observer } from 'mobx-react'
 
 interface BasicLayoutProps {
   children?: React.ReactNode;
@@ -11,12 +13,37 @@ interface BasicLayoutProps {
 
 const { Header, Sider, Content, Footer } = Layout;
 
-const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
-  const {permissions} = usePermission();
+const BasicLayout: React.FC<BasicLayoutProps> = observer(({ children }) => {
+   const [msgApi, msgHolder] = message.useMessage(); // 使用 hooks API
+  const store = useStore();
+   const { permissions, logout } = store.LoginStore;
+
+  const logoutHandler = () => {
+    logout();
+    msgApi.success('登出成功');
+  };
+
+    const menu = (
+    <Menu>
+      <Menu.Item key="logout" onClick={logoutHandler} icon={<LogoutOutlined />}>
+        登出
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <Layout className="layout">
+        {msgHolder}
       <Header>
         <div className="logo" />
+        <div style={{ float: 'right', marginRight: 20 }}>
+          <Dropdown overlay={menu} trigger={['click']}>
+            <a onClick={(e) => e.preventDefault()}>
+              <Avatar style={{ marginRight: 8 }} icon={<UserOutlined />} />
+              用户名
+            </a>
+          </Dropdown>
+        </div>
       </Header>
       <Layout>
         <Sider width={200} className="site-layout-background">
@@ -40,6 +67,6 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
       </Layout>
     </Layout>
   );
-};
+});
 
 export default BasicLayout;

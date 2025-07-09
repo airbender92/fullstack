@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { emit } from './event-bus';
-import { notification } from 'antd';
+
 
 // 缓存请求
 const pendingRequests = new Map();
@@ -24,7 +24,7 @@ instance.interceptors.request.use(
     // 生成请求标识
     const requestKey = `${config.method}:${config.url}`;
     // 如果有相同请求正在进行，取消当前请求
-    if(pendingRequests.has(requestKey)) {
+    if (pendingRequests.has(requestKey)) {
       const source = pendingRequests.get(requestKey);
       source.cancel('请求被取消，原因：重复请求');
       pendingRequests.delete(requestKey);
@@ -58,11 +58,11 @@ instance.interceptors.response.use(
   },
   async (error) => {
     // 请求失败，从缓存中移除
-    if(error.config) {
+    if (error.config) {
       const requestKey = `${error.config.method}:${error.config.url}`;
       pendingRequests.delete(requestKey);
     }
-    if(axios.isCancel(error)) {
+    if (axios.isCancel(error)) {
       console.log('请求被取消：', error.message)
     }
     const originalConfig = error.config;
@@ -75,13 +75,19 @@ instance.interceptors.response.use(
         try {
           const refreshToken = getRefreshToken();
           if (!refreshToken) {
+            emit('antdNotification', {
+              type: 'error', options: {
+                message: 'Server Error',
+                description: errorData.message || 'An internal server error occurred'
+              }
+            });
             // 发布导航事件
-            emit('navigate', '/login');
+            emit('navigate', { path: '/login' });
             return Promise.reject(error);
           }
 
           // 发送刷新 token 请求
-          const response: {token: string, refreshToken: string} = await instance.post('/api/auth/refresh-token', {
+          const response: { token: string, refreshToken: string } = await instance.post('/api/auth/refresh-token', {
             refreshToken,
           });
           const { token: newToken, refreshToken: newRefreshToken } = response;
@@ -94,21 +100,35 @@ instance.interceptors.response.use(
           originalConfig.headers.Authorization = `Bearer ${newToken}`;
           return instance(originalConfig);
         } catch (refreshError) {
+          emit('antdNotification', {
+            type: 'error', options: {
+              message: 'Server Error',
+              description: errorData.message || 'An internal server error occurred'
+            }
+          });
           // 刷新 token 失败，发布导航事件
-          emit('navigate', '/login');
+          emit('navigate', { path: '/login' });
           return Promise.reject(refreshError);
         }
       }
 
       // 403 状态码处理
       if (error.response.status === 403) {
-        emit('navigate', '/login');
+        emit('antdNotification', {
+          type: 'error', options: {
+            message: 'Server Error',
+            description: errorData.message || 'An internal server error occurred'
+          }
+        });
+        emit('navigate', { path: '/login' });
       }
       // 500 状态码处理（服务器内部错误）
       if (error.response.status === 500) {
-        notification.error({
-          message: 'Server Error',
-          description: errorData.message || 'An internal server error occurred'
+        emit('antdNotification', {
+          type: 'error', options: {
+            message: 'Server Error',
+            description: errorData.message || 'An internal server error occurred'
+          }
         });
       }
       return Promise.reject(errorData);

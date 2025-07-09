@@ -12,14 +12,14 @@ import LoginGuard from './LoginGuard';
 import routes from '@/routes';
 import PermissionGuard from './PermissionGuard';
 
-import { NavigationProvider } from '@/utils/navigation'
 import NavigationListener from '@/utils/NavigationListener';
+import MessageNotificationListener from '@/utils/MessageNotificationListener'
 
 const App: React.FC = () => {
   return (
     <Router>
-      {/* <NavigationProvider> */}
       <NavigationListener />
+      <MessageNotificationListener />
       <LoginGuard>
         <Routes>
           {/* 登录路由放在权限验证外面 */}
@@ -56,7 +56,6 @@ const App: React.FC = () => {
           </Route>
         </Routes>
       </LoginGuard>
-      {/* </NavigationProvider> */}
     </Router>
   );
 };

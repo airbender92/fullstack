@@ -1,29 +1,36 @@
 // client/src/pages/Login/index.tsx
 import React from 'react';
-import { Form, Input, Button, message } from 'antd';
+import { Form, Input, Button, message, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useStore } from '@/stores/useStore';
+import { observer } from 'mobx-react'
 
-const Login: React.FC = () => {
+const Login: React.FC = observer(() => {
+     const [msgApi, msgHolder] = message.useMessage(); // 使用 hooks API
   const store = useStore();
-  const { login, error } = store.LoginStore;
+  const { login } = store.LoginStore;
 
   const onFinish = async (values: { username: string; password: string }) => {
     // 这里可以添加实际的登录逻辑，例如发送请求到后端验证用户名和密码
-    console.log('Received values of form: ', values);
-    const response = await login({
-      username: values.username,
-      password: values.password,
-    });
-
-    if (response.isLoggedIn) {
-      message.success('登录成功');
-      window.location.href = '#/';
-    } else {
-      message.error(response.error || '登录失败，请检查用户名和密码');
+    try{
+      const response = await login({
+        username: values.username,
+        password: values.password,
+      });
+  
+      if (response.isLoggedIn) {
+        msgApi.success('登录成功');
+        window.location.href = '#/';
+      } else {
+        msgApi.error(response.error || '登录失败，请检查用户名和密码');
+      }
+    } catch(error) {
+      console.log('loginError', error)
     }
   };
   return (
+    <>
+    {msgHolder}
     <Form
       name="login"
       initialValues={{ remember: true }}
@@ -55,7 +62,8 @@ const Login: React.FC = () => {
         </Button>
       </Form.Item>
     </Form>
+    </>
   );
-};
+});
 
 export default Login;
