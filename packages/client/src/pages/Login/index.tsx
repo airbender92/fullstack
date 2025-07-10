@@ -1,9 +1,10 @@
 // client/src/pages/Login/index.tsx
 import React from 'react';
-import { Form, Input, Button, message, notification } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useStore } from '@/stores/useStore';
 import { observer } from 'mobx-react'
+import { emit } from '@/utils/event-bus';
 
 const Login: React.FC = observer(() => {
      const [msgApi, msgHolder] = message.useMessage(); // 使用 hooks API
@@ -19,10 +20,10 @@ const Login: React.FC = observer(() => {
       });
   
       if (response.isLoggedIn) {
-        msgApi.success('登录成功');
+        emit('success', '登录成功')
         window.location.href = '#/';
       } else {
-        msgApi.error(response.error || '登录失败，请检查用户名和密码');
+        emit('error', response.error || '登录失败，请检查用户名和密码');
       }
     } catch(error) {
       console.log('loginError', error)

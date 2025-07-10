@@ -1,9 +1,9 @@
 import { Router} from 'express'
-import { getLotteryFrequency } from '../controllers/lottery.controller'
+import { getLotteryList } from '../controllers/lottery.controller'
 
 const router = Router();
 
 // @ts-ignore
-router.get('/', getLotteryFrequency);
+router.get('/getLotteryByRange', getLotteryList);
 
 export default router

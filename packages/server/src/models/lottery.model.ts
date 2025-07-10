@@ -8,7 +8,7 @@ export interface ILottery extends Document {
 
 const lotterySchema: Schema = new Schema({
     date: { type: Date, required: true},
-    redBalls: { type: Number, required: true},
+    redBalls: { type: [Number], required: true},
     blueBall: { type: Number, required: true},
 })
 

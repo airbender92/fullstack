@@ -2,72 +2,59 @@ import { Request, Response } from 'express'
 import Lottery, { ILottery } from '../models/lottery.model';
 import { errorResponse, successResponse } from '../utils/responseUtil'
 
+const isValidDate = (date: Date): boolean => {
+    return !isNaN(date.getTime());
+};
 
-const getFrequency = async (startDate: Date, endDate: Date) => {
+const findLotteriesByDateRange = async (startDate: Date, endDate: Date) => {
+    if (!isValidDate(startDate) || !isValidDate(endDate)) {
+        throw new Error('Invalid date provided');
+    }
+    
+    if (startDate > endDate) {
+        throw new Error('Start date cannot be after end date');
+    }
+    
     const results: ILottery[] = await Lottery.find({
         date: { $gte: startDate, $lte: endDate },
     });
-
-    const redBallFrequency: { [key: number]: number } = {};
-    const blueBallFrequency: { [key: number]: number } = {};
-
-    for (const result of results) {
-        if (result.redBalls && result.blueBall) {
-            for (const redBall of result.redBalls) {
-                redBallFrequency[redBall] = (redBallFrequency[redBall] || 0) + 1;
-            }
-            blueBallFrequency[result.blueBall] = (blueBallFrequency[result.blueBall] || 0) + 1;
-        }
-    }
-    return { redBallFrequency, blueBallFrequency };
+    return results;
 };
 
-export const getLotteryFrequency = async (req: Request, res: Response) => {
-    const { timeRange } = req.query;
-    let startDate: Date;
-    const endDate = new Date();
+export const getLotteryList = async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query;
 
-    switch (timeRange) {
-        case 'threeYears':
-            startDate = new Date(endDate.getFullYear() - 3, endDate.getMonth(), endDate.getDate());
-            break;
-        case 'oneYear':
-            startDate = new Date(endDate.getFullYear() - 1, endDate.getMonth(), endDate.getDate());
-            break;
-        case 'halfYear':
-            startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 6, endDate.getDate());
-            break;
-        case 'threeMonths':
-            startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 3, endDate.getDate());
-            break;
-        case 'oneMonth':
-            startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 1, endDate.getDate());
-            break;
-        default:
-            return errorResponse(res, 400, 'Invalid time range');
+    // 验证查询参数是否存在
+    if (!startDate || !endDate) {
+        return errorResponse(res, 400, 'startDate and endDate are required query parameters');
+    }
 
+    // 转换为Date对象
+    const start = new Date(startDate as string);
+    const end = new Date(endDate as string);
 
+    // 验证日期有效性
+    if (!isValidDate(start) || !isValidDate(end)) {
+        return errorResponse(res, 400, 'Invalid date format. Use ISO 8601 format (YYYY-MM-DD).');
     }
 
     try {
-        const { redBallFrequency, blueBallFrequency } = await getFrequency(startDate, endDate)
-        res.status(200).json({ redBallFrequency, blueBallFrequency })
-        successResponse(res, 200, { redBallFrequency, blueBallFrequency });
-
-    } catch (error) {
-        errorResponse(res, 500, 'Failed to get lottery frequency');
-
+        const lotteries = await findLotteriesByDateRange(start, end);
+        successResponse(res, 200, lotteries);
+    } catch (error: any) {
+        if (error.message === 'Start date cannot be after end date') {
+            return errorResponse(res, 400, error.message);
+        }
+        errorResponse(res, 500, 'Failed to retrieve lottery data');
     }
-}
+};
 
 // 获取所有彩票数据
 export const getLotteries = async (req: Request, res: Response) => {
     try {
         const lotteries: ILottery[] = await Lottery.find();
         successResponse(res, 200, lotteries);
-
     } catch (error) {
         errorResponse(res, 500, 'Failed to fetch lotteries');
-
     }
-}
+};
