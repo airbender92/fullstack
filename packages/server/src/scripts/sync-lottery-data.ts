@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 import Lottery, { ILottery } from '../models/lottery.model';
 import { errorResponse } from '../utils/responseUtil';
+import {data} from '../originData/lotty/2025';
 
 // 模拟从外部获取需要同步的彩票数据
 type LotteryInput = {
@@ -11,18 +12,7 @@ type LotteryInput = {
 };
 
 const getExternalLotteryData = (): LotteryInput[] => {
-    return [
-        {
-            date: new Date('2025-07-08'),
-            redBalls: [4, 7, 8, 15, 20, 21],
-            blueBall: 15
-        },
-        {
-            date: new Date('2024-07-06'),
-            redBalls: [2, 6, 9, 12, 14, 30],
-            blueBall: 8
-        }
-    ];
+    return data;
 };
 
 // 模拟获取需要删除的彩票记录的日期标识
