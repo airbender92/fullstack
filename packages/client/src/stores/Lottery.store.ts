@@ -1,5 +1,5 @@
 import { makeObservable, observable, action, runInAction } from 'mobx';
-import { getLotteryByRange, Lottery, ITimeRange } from '@/service/lottery';
+import { getLotteryByRange, Lottery, ITimeRange, queryExistApi, Ball } from '@/service/lottery';
 
 class LotteryStore {
   @observable lotteries: Lottery[] = [];
@@ -29,6 +29,19 @@ class LotteryStore {
         this.error = err?.message || '获取彩票数据失败';
         this.loading = false;
       });
+    }
+  };
+
+    /**
+   * 查找是否已存在
+   */
+  @action
+  queryExist = async (params: Ball) => {
+    try {
+      const result:any = await queryExistApi(params);
+      return result.exists ? 1 : 0;
+    } catch (err: any) {
+      return -1;
     }
   };
 }

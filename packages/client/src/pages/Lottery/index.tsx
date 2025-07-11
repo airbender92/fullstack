@@ -6,6 +6,7 @@ import 'echarts';
 import { useStore } from '@/stores/useStore';
 import { observer } from 'mobx-react'
 import { emit } from '@/utils/event-bus';
+import CheckExist from './CheckExist'
 
 
 interface FrequencyData {
@@ -29,7 +30,7 @@ const LotteryChart: React.FC = observer(() => {
     setDateRange(dates ?? [null, null]);
   };
 
-    // 格式化日期显示为更友好的格式
+  // 格式化日期显示为更友好的格式
   const formatDate = (dateStr: string) => {
     try {
       return dayjs(dateStr).format('MM-DD');
@@ -74,12 +75,12 @@ const LotteryChart: React.FC = observer(() => {
         type: 'category',
         name: '日期',
         data: lotteries.map((item: any) => item.date || item.openDate || item.expect || ''),
-        axisLabel: { 
+        axisLabel: {
           rotate: 45,
           // 使用函数格式化日期显示
           formatter: (value: string) => formatDate(value)
         },
-         axisTick: { interval: 2 }
+        axisTick: { interval: 2 }
       },
       yAxis: {
         type: 'value',
@@ -110,7 +111,8 @@ const LotteryChart: React.FC = observer(() => {
 
   const loadData = async () => {
     if (!dateRange[0] || !dateRange[1]) {
-      emit('warning', '请选择开始和结束日期');
+      emit('antdMessage', { type: 'warning', content: '请选择开始和结束日期' });
+
       return;
     }
     try {
@@ -134,8 +136,9 @@ const LotteryChart: React.FC = observer(() => {
 
   return (
     <div className="container mx-auto p-4 bg-white rounded-lg shadow-lg">
+      <CheckExist />
       {/* 选择时间范围 */}
-      <div className="mb-6 flex justify-center">
+      <div className="mb-6 flex justify-end">
         <DatePicker.RangePicker
           value={dateRange}
           onChange={handleDateChange}

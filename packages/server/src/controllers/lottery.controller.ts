@@ -58,3 +58,28 @@ export const getLotteries = async (req: Request, res: Response) => {
         errorResponse(res, 500, 'Failed to fetch lotteries');
     }
 };
+
+export const checkLotteryExists = async (req: Request, res: Response) => {
+    const { redBalls, blueBall } = req.body;
+
+    // 验证查询参数是否存在
+    if (!redBalls || !blueBall) {
+        return errorResponse(res, 400, 'redBalls and blueBall are required query parameters');
+    }
+
+    // 将 redBalls 转换为数组
+    const redBallsArray = Array.isArray(redBalls) ? redBalls.map(Number) : [Number(redBalls)];
+    const blueBallNumber = Number(blueBall);
+
+    try {
+        const lottery = await Lottery.findOne({
+            redBalls: { $all: redBallsArray },
+            blueBall: blueBallNumber
+        });
+
+        const exists = !!lottery;
+        successResponse(res, 200, { exists });
+    } catch (error) {
+        errorResponse(res, 500, 'Failed to check lottery data');
+    }
+};

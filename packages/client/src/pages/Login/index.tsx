@@ -20,10 +20,10 @@ const Login: React.FC = observer(() => {
       });
   
       if (response.isLoggedIn) {
-        emit('success', '登录成功')
+        emit('antdMessage', {type: 'success', content: '登录成功'});
         window.location.href = '#/';
       } else {
-        emit('error', response.error || '登录失败，请检查用户名和密码');
+        emit('antdMessage', {type: 'error', content: response.error || '登录失败，请检查用户名和密码'});
       }
     } catch(error) {
       console.log('loginError', error)
